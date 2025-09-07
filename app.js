@@ -191,8 +191,8 @@ function pickFirst(...vals) {
 }
 
 async function analyze(file) {
-  // Read dimensions in parallel with metadata; be tolerant of unsupported formats
-  const [dims, meta] = await Promise.all([
+  // Read dimensions + metadata in parallel; also get gps via dedicated API for robustness on mobile
+  const [dims, meta, gpsOnly] = await Promise.all([
     loadImageDimensions(file),
     (async () => {
       try {
@@ -200,6 +200,11 @@ async function analyze(file) {
       } catch {
         return {};
       }
+    })(),
+    (async () => {
+      try {
+        return await exifr.gps(file);
+      } catch { return undefined; }
     })()
   ]);
 
@@ -212,8 +217,8 @@ async function analyze(file) {
   const height = pickFirst(meta?.ExifImageHeight, meta?.ImageHeight, dims.height);
 
   // GPS handling (robust across browsers)
-  let lat = meta?.latitude ?? meta?.Latitude ?? meta?.GPSLatitude;
-  let lng = meta?.longitude ?? meta?.Longitude ?? meta?.GPSLongitude;
+  let lat = meta?.latitude ?? meta?.Latitude ?? meta?.GPSLatitude ?? gpsOnly?.latitude;
+  let lng = meta?.longitude ?? meta?.Longitude ?? meta?.GPSLongitude ?? gpsOnly?.longitude;
 
   // Convert EXIF DMS arrays and fraction strings/objects to decimal degrees
   const fractionToNumber = (val) => {
@@ -281,8 +286,8 @@ async function analyze(file) {
 
   lat = toDecimal(lat);
   lng = toDecimal(lng);
-  if (isFiniteNumber(lat) && String(meta?.GPSLatitudeRef).toUpperCase() === 'S') lat = -Math.abs(lat);
-  if (isFiniteNumber(lng) && String(meta?.GPSLongitudeRef).toUpperCase() === 'W') lng = -Math.abs(lng);
+  if (isFiniteNumber(lat) && String(meta?.GPSLatitudeRef ?? meta?.latitudeRef).toUpperCase() === 'S') lat = -Math.abs(lat);
+  if (isFiniteNumber(lng) && String(meta?.GPSLongitudeRef ?? meta?.longitudeRef).toUpperCase() === 'W') lng = -Math.abs(lng);
 
   // Headline stats
   dateTakenEl.textContent = formatDate(dateOriginal);
@@ -311,7 +316,14 @@ async function analyze(file) {
   const software = meta?.Software ? String(meta.Software) : undefined;
   const artist = meta?.Artist ? String(meta.Artist) : undefined;
   const copyright = meta?.Copyright ? String(meta.Copyright) : undefined;
-  const gpsAlt = (typeof meta?.GPSAltitude === 'number') ? `${meta.GPSAltitude} m` : undefined;
+  // Altitude: handle rational values and sign (Ref 1 == below sea level)
+  let gpsAltVal = meta?.altitude ?? meta?.GPSAltitude;
+  if (!isFiniteNumber(gpsAltVal)) gpsAltVal = fractionToNumber(gpsAltVal);
+  if (isFiniteNumber(gpsAltVal)) {
+    const ref = String(meta?.GPSAltitudeRef ?? '').trim();
+    if (ref === '1' || ref === 'B' || ref.toLowerCase() === 'below') gpsAltVal = -Math.abs(gpsAltVal);
+  }
+  const gpsAlt = isFiniteNumber(gpsAltVal) ? `${gpsAltVal} m` : undefined;
 
   const iptcTitle = pickFirst(meta?.ObjectName, meta?.Title, meta?.DocumentTitle);
   const iptcDesc = pickFirst(meta?.Caption, meta?.CaptionAbstract, meta?.Description);
