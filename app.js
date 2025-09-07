@@ -34,8 +34,9 @@ const mapOrientation = (v) => ({
   1:'Normal',2:'Mirror horizontal',3:'Rotate 180°',4:'Mirror vertical',5:'Mirror + rotate 90° CW',6:'Rotate 90° CW',7:'Mirror + rotate 270°',8:'Rotate 270°'
 })[v] || (v ?? '—');
 const flashFired = (val) => (typeof val === 'number' ? (val & 0x1) !== 0 : false);
+const isFiniteNumber = (v) => typeof v === 'number' && Number.isFinite(v);
 const formatLatLng = (lat, lng) => {
-  if (typeof lat !== 'number' || typeof lng !== 'number') return '—';
+  if (!isFiniteNumber(lat) || !isFiniteNumber(lng)) return '—';
   const hemiLat = lat >= 0 ? 'N' : 'S';
   const hemiLng = lng >= 0 ? 'E' : 'W';
   return `${Math.abs(lat).toFixed(6)}° ${hemiLat}, ${Math.abs(lng).toFixed(6)}° ${hemiLng}`;
@@ -180,7 +181,7 @@ function kvRow(key, value) {
 }
 
 function linkToMaps(lat, lng) {
-  if (typeof lat !== 'number' || typeof lng !== 'number') return '—';
+  if (!isFiniteNumber(lat) || !isFiniteNumber(lng)) return '—';
   const q = encodeURIComponent(`${lat},${lng}`);
   return `<a class="link" href="https://maps.google.com/?q=${q}" target="_blank" rel="noopener">Open in Google Maps</a>`;
 }
@@ -210,24 +211,84 @@ async function analyze(file) {
   const width = pickFirst(meta?.ExifImageWidth, meta?.ImageWidth, dims.width);
   const height = pickFirst(meta?.ExifImageHeight, meta?.ImageHeight, dims.height);
 
-  // GPS handling
+  // GPS handling (robust across browsers)
   let lat = meta?.latitude ?? meta?.Latitude ?? meta?.GPSLatitude;
   let lng = meta?.longitude ?? meta?.Longitude ?? meta?.GPSLongitude;
-  const toDecimal = (arr) => {
-    if (!Array.isArray(arr)) return arr;
-    const [d=0,m=0,s=0] = arr.map(Number);
-    return d + m/60 + s/3600;
+
+  // Convert EXIF DMS arrays and fraction strings/objects to decimal degrees
+  const fractionToNumber = (val) => {
+    if (typeof val === 'number') return val;
+    if (typeof val === 'string') {
+      // Handle fraction like "123/100" or plain float
+      const frac = val.match(/^\s*(-?\d+(?:\.\d+)?)\s*\/\s*(-?\d+(?:\.\d+)?)\s*$/);
+      if (frac) {
+        const n = parseFloat(frac[1]);
+        const d = parseFloat(frac[2]);
+        return (Number.isFinite(n) && Number.isFinite(d) && d !== 0) ? n / d : NaN;
+      }
+      const f = parseFloat(val);
+      return Number.isFinite(f) ? f : NaN;
+    }
+    // Arrays like [num, den]
+    if (Array.isArray(val) && val.length === 2) {
+      const n = fractionToNumber(val[0]);
+      const d = fractionToNumber(val[1]);
+      return (Number.isFinite(n) && Number.isFinite(d) && d !== 0) ? n / d : NaN;
+    }
+    // Objects like {numerator, denominator}
+    if (val && typeof val === 'object') {
+      const nRaw = val.numerator ?? val.num;
+      const dRaw = val.denominator ?? val.den;
+      if (nRaw !== undefined && dRaw !== undefined) {
+        const n = Number(nRaw);
+        const d = Number(dRaw);
+        return (Number.isFinite(n) && Number.isFinite(d) && d !== 0) ? n / d : NaN;
+      }
+      // valueOf() returning a number
+      if (typeof val.valueOf === 'function') {
+        const v = val.valueOf();
+        if (typeof v === 'number' && Number.isFinite(v)) return v;
+      }
+    }
+    return NaN;
   };
+
+  const toDecimal = (value) => {
+    if (isFiniteNumber(value)) return value;
+    // DMS array or array-like
+    const isArrayLike = Array.isArray(value) || (value && typeof value === 'object' && typeof value.length === 'number');
+    if (isArrayLike) {
+      const arr = Array.from(value);
+      const d = fractionToNumber(arr[0]);
+      const m = fractionToNumber(arr[1]);
+      const s = fractionToNumber(arr[2]);
+      const dec = d + m / 60 + s / 3600;
+      return Number.isFinite(dec) ? dec : NaN;
+    }
+    if (typeof value === 'string') {
+      // Strings like "12/1 34/1 56789/1000" or CSV
+      const parts = value.trim().split(/[ ,;]+/).map(fractionToNumber);
+      if (parts.length >= 3) {
+        const [d, m, s] = parts;
+        const dec = d + m / 60 + s / 3600;
+        return Number.isFinite(dec) ? dec : NaN;
+      }
+      const n = fractionToNumber(value);
+      return Number.isFinite(n) ? n : NaN;
+    }
+    return NaN;
+  };
+
   lat = toDecimal(lat);
   lng = toDecimal(lng);
-  if (typeof lat === 'number' && meta?.GPSLatitudeRef === 'S') lat = -Math.abs(lat);
-  if (typeof lng === 'number' && meta?.GPSLongitudeRef === 'W') lng = -Math.abs(lng);
+  if (isFiniteNumber(lat) && String(meta?.GPSLatitudeRef).toUpperCase() === 'S') lat = -Math.abs(lat);
+  if (isFiniteNumber(lng) && String(meta?.GPSLongitudeRef).toUpperCase() === 'W') lng = -Math.abs(lng);
 
   // Headline stats
   dateTakenEl.textContent = formatDate(dateOriginal);
   cameraEl.textContent = camera || '—';
   resolutionEl.textContent = (width && height) ? `${width} × ${height}` : '—';
-  locationEl.innerHTML = (typeof lat === 'number' && typeof lng === 'number')
+  locationEl.innerHTML = (isFiniteNumber(lat) && isFiniteNumber(lng))
     ? `${formatLatLng(lat, lng)} · ${linkToMaps(lat, lng)}`
     : '—';
 
