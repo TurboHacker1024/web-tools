@@ -65,11 +65,14 @@
         <section class="card drop" aria-label="Upload and analyze">
           <div class="dropzone" id="dropzone" aria-live="polite" tabindex="0" role="button">
             <input id="file-input" type="file" accept="image/*,.heic,.heif,.tif,.tiff,.webp,.png,.jpg,.jpeg" />
+            <!-- Alternate picker for Android Chrome/Brave which may redact GPS when using image/* -->
+            <input id="file-input-any" type="file" accept="*/*" style="display:none" />
             <div class="drop-inner">
               <div class="drop-title">Drag & drop an image here</div>
               <div class="drop-hint">or</div>
               <div class="buttons">
                 <button class="btn" id="browse-btn" type="button">Choose a file</button>
+                <button class="btn ghost" id="browse-alt-btn" type="button" title="Use generic file picker (Android fix)">Alternate picker</button>
                 <button class="btn primary" id="analyze-btn" type="button" disabled>
                   <span id="analyze-label">Analyze</span>
                   <span id="analyze-spin" class="spinner" style="display:none"></span>
@@ -93,6 +96,7 @@
               <div class="stat"><label>Camera</label><div class="value" id="camera">—</div></div>
               <div class="stat"><label>Resolution</label><div class="value" id="resolution">—</div></div>
               <div class="stat"><label>Location</label><div class="value" id="location">—</div></div>
+              <div class="note" id="gps-note" style="display:none"></div>
             </div>
 
             <div class="meta-table" id="meta-table"></div>

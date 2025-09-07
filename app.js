@@ -49,6 +49,8 @@ const browseBtn = $('#browse-btn');
 const analyzeBtn = $('#analyze-btn');
 const analyzeLabel = $('#analyze-label');
 const analyzeSpin = $('#analyze-spin');
+const altFileInput = document.getElementById('file-input-any');
+const altBrowseBtn = document.getElementById('browse-alt-btn');
 
 const previewBox = $('#preview');
 const previewImg = $('#preview-img');
@@ -61,6 +63,7 @@ const dateTakenEl = $('#date-taken');
 const cameraEl = $('#camera');
 const resolutionEl = $('#resolution');
 const locationEl = $('#location');
+const gpsNoteEl = document.getElementById('gps-note');
 const metaTable = $('#meta-table');
 const rawJsonEl = $('#raw-json');
 const copyJsonBtn = $('#copy-json');
@@ -75,6 +78,7 @@ function resetUI() {
   analyzeBtn.disabled = !selectedFile;
   analyzeLabel.style.display = '';
   analyzeSpin.style.display = 'none';
+  if (gpsNoteEl) { gpsNoteEl.style.display = 'none'; gpsNoteEl.textContent = ''; }
 }
 
 function setFile(file) {
@@ -136,8 +140,13 @@ function handleIncomingFile(file) {
 }
 
 browseBtn.addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
+altBrowseBtn && altBrowseBtn.addEventListener('click', (e) => { e.stopPropagation(); altFileInput && altFileInput.click(); });
 fileInput.addEventListener('change', () => {
   const f = fileInput.files?.[0];
+  if (f) handleIncomingFile(f);
+});
+altFileInput && altFileInput.addEventListener('change', () => {
+  const f = altFileInput.files?.[0];
   if (f) handleIncomingFile(f);
 });
 
@@ -325,6 +334,22 @@ async function analyze(file) {
   locationEl.innerHTML = (isFiniteNumber(lat) && isFiniteNumber(lng))
     ? `${formatLatLng(lat, lng)} · ${linkToMaps(lat, lng)}`
     : '—';
+
+  // If GPS block exists but coords missing, show Android picker hint
+  const hasGpsBlock = (
+    meta?.GPSVersionID !== undefined || meta?.GPSLatitude !== undefined || meta?.GPSLongitude !== undefined ||
+    meta?.latitude !== undefined || meta?.longitude !== undefined || gpsOnly !== undefined
+  );
+  const coordsMissing = !(isFiniteNumber(lat) && isFiniteNumber(lng));
+  if (gpsNoteEl) {
+    if (hasGpsBlock && coordsMissing) {
+      gpsNoteEl.style.display = 'block';
+      gpsNoteEl.textContent = 'No GPS coordinates found in this copy. On Android Chrome/Brave, the photo picker often removes location metadata. Try the Alternate picker above or pick from the Files app/Downloads rather than Photos.';
+    } else {
+      gpsNoteEl.style.display = 'none';
+      gpsNoteEl.textContent = '';
+    }
+  }
 
   // Details table
   metaTable.innerHTML = '';
