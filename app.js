@@ -253,17 +253,26 @@ async function analyze(file) {
     }
     // Objects like {numerator, denominator}
     if (val && typeof val === 'object') {
-      const nRaw = val.numerator ?? val.num;
-      const dRaw = val.denominator ?? val.den;
-      if (nRaw !== undefined && dRaw !== undefined) {
-        const n = Number(nRaw);
-        const d = Number(dRaw);
-        return (Number.isFinite(n) && Number.isFinite(d) && d !== 0) ? n / d : NaN;
-      }
       // valueOf() returning a number
       if (typeof val.valueOf === 'function') {
         const v = val.valueOf();
         if (typeof v === 'number' && Number.isFinite(v)) return v;
+        // Some implementations stringify as "n/d" via toString
+        if (typeof v === 'string') {
+          const p = fractionToNumber(v);
+          if (Number.isFinite(p)) return p;
+        }
+      }
+      // Known numerator/denominator key variants
+      const numKeys = ['numerator','num','n','N'];
+      const denKeys = ['denominator','den','d','D'];
+      let nRaw, dRaw;
+      for (const k of numKeys) if (k in val) { nRaw = val[k]; break; }
+      for (const k of denKeys) if (k in val) { dRaw = val[k]; break; }
+      if (nRaw !== undefined && dRaw !== undefined) {
+        const n = Number(nRaw);
+        const d = Number(dRaw);
+        return (Number.isFinite(n) && Number.isFinite(d) && d !== 0) ? n / d : NaN;
       }
     }
     return NaN;
@@ -337,13 +346,42 @@ async function analyze(file) {
   const artist = meta?.Artist ? String(meta.Artist) : undefined;
   const copyright = meta?.Copyright ? String(meta.Copyright) : undefined;
   // Altitude: handle rational values and sign (Ref 1 == below sea level)
-  let gpsAltVal = meta?.altitude ?? meta?.GPSAltitude;
+  let gpsAltVal = gpsOnly?.altitude ?? meta?.altitude ?? meta?.GPSAltitude;
   if (!isFiniteNumber(gpsAltVal)) gpsAltVal = fractionToNumber(gpsAltVal);
   if (isFiniteNumber(gpsAltVal)) {
     const ref = String(meta?.GPSAltitudeRef ?? '').trim();
     if (ref === '1' || ref === 'B' || ref.toLowerCase() === 'below') gpsAltVal = -Math.abs(gpsAltVal);
   }
   const gpsAlt = isFiniteNumber(gpsAltVal) ? `${gpsAltVal} m` : undefined;
+  
+  // Attach debug info for troubleshooting (visible in Advanced JSON)
+  try {
+    const dbgCandidates = { latCandidates, lngCandidates };
+    const dbgConverted = {
+      latParsed: lat,
+      lngParsed: lng,
+      latRef,
+      lngRef,
+      gpsOnly
+    };
+    meta._debug = Object.assign({}, meta._debug || {}, { gps: { candidates: dbgCandidates, parsed: dbgConverted, raw: {
+      latitude: meta?.latitude,
+      longitude: meta?.longitude,
+      GPSLatitude: meta?.GPSLatitude,
+      GPSLongitude: meta?.GPSLongitude,
+      Latitude: meta?.Latitude,
+      Longitude: meta?.Longitude,
+      GPSLatitudeRef: meta?.GPSLatitudeRef,
+      GPSLongitudeRef: meta?.GPSLongitudeRef,
+      GPSAltitude: meta?.GPSAltitude,
+      GPSAltitudeRef: meta?.GPSAltitudeRef,
+      altitude: meta?.altitude
+    } } });
+    // Also log to console to aid remote debugging
+    if (typeof console !== 'undefined' && console.debug) {
+      console.debug('[DD metadata-reader] GPS debug', meta._debug.gps);
+    }
+  } catch {}
 
   const iptcTitle = pickFirst(meta?.ObjectName, meta?.Title, meta?.DocumentTitle);
   const iptcDesc = pickFirst(meta?.Caption, meta?.CaptionAbstract, meta?.Description);
