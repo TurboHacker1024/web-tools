@@ -217,8 +217,19 @@ async function analyze(file) {
   const height = pickFirst(meta?.ExifImageHeight, meta?.ImageHeight, dims.height);
 
   // GPS handling (robust across browsers)
-  let lat = meta?.latitude ?? meta?.Latitude ?? meta?.GPSLatitude ?? gpsOnly?.latitude;
-  let lng = meta?.longitude ?? meta?.Longitude ?? meta?.GPSLongitude ?? gpsOnly?.longitude;
+  // Try multiple sources and pick the first that converts to a finite number.
+  const latCandidates = [
+    meta?.latitude,
+    gpsOnly?.latitude,
+    meta?.GPSLatitude,
+    meta?.Latitude,
+  ];
+  const lngCandidates = [
+    meta?.longitude,
+    gpsOnly?.longitude,
+    meta?.GPSLongitude,
+    meta?.Longitude,
+  ];
 
   // Convert EXIF DMS arrays and fraction strings/objects to decimal degrees
   const fractionToNumber = (val) => {
@@ -284,10 +295,19 @@ async function analyze(file) {
     return NaN;
   };
 
-  lat = toDecimal(lat);
-  lng = toDecimal(lng);
-  if (isFiniteNumber(lat) && String(meta?.GPSLatitudeRef ?? meta?.latitudeRef).toUpperCase() === 'S') lat = -Math.abs(lat);
-  if (isFiniteNumber(lng) && String(meta?.GPSLongitudeRef ?? meta?.longitudeRef).toUpperCase() === 'W') lng = -Math.abs(lng);
+  const firstFinite = (list) => {
+    for (const v of list) {
+      const dec = toDecimal(v);
+      if (Number.isFinite(dec)) return dec;
+    }
+    return NaN;
+  };
+  let lat = firstFinite(latCandidates);
+  let lng = firstFinite(lngCandidates);
+  const latRef = (meta?.GPSLatitudeRef ?? meta?.latitudeRef ?? gpsOnly?.latitudeRef);
+  const lngRef = (meta?.GPSLongitudeRef ?? meta?.longitudeRef ?? gpsOnly?.longitudeRef);
+  if (isFiniteNumber(lat) && String(latRef || '').toUpperCase() === 'S') lat = -Math.abs(lat);
+  if (isFiniteNumber(lng) && String(lngRef || '').toUpperCase() === 'W') lng = -Math.abs(lng);
 
   // Headline stats
   dateTakenEl.textContent = formatDate(dateOriginal);
