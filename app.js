@@ -448,19 +448,7 @@ copyJsonBtn.addEventListener('click', async () => {
 
 // Initialize
 resetUI();
-// Show only the appropriate picker button for the platform
-(function(){
-  if (!browseBtn || !altBrowseBtn) return;
-  if (preferAltPicker) {
-    // Mobile: show only Alternate picker
-    browseBtn.style.display = 'none';
-    altBrowseBtn.style.display = '';
-  } else {
-    // Desktop: show only standard image picker
-    altBrowseBtn.style.display = 'none';
-    browseBtn.style.display = '';
-  }
-})();
+// Button visibility handled via CSS (data-ua)
 // Footer year
 (function(){ const y = document.getElementById('year'); if (y) y.textContent = new Date().getFullYear(); })();
 // Mobile menu toggle
