@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Distro Doctor™ Image Metadata Reader | Free Tool</title>
+    <meta name="description" content="Read EXIF, IPTC, and XMP metadata (including GPS) from images like JPEG, PNG, HEIC/HEIF, WebP, and TIFF — all in your browser." />
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <script src="theme-init.js"></script>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <header>
+      <div class="topbar">
+        <div class="wrap topbar-inner">
+          <a class="brand" href="index.html">
+            <div class="logo" aria-hidden="true">DD</div>
+            <div class="brand-name">Distro Doctor™</div>
+          </a>
+          <button class="menu-btn" id="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="nav-panel">Menu</button>
+          <div class="nav">
+            <a class="btn ghost" href="index.html">All Tools</a>
+            <a class="btn" href="contact.html">Contact</a>
+            <label class="switch" aria-label="Toggle theme">
+              <input type="checkbox" id="theme-toggle" />
+              <span class="track">
+                <span class="icon sun">☀️</span>
+                <span class="icon moon">🌙</span>
+                <span class="thumb"></span>
+              </span>
+            </label>
+          </div>
+        </div>
+        <div id="nav-panel" class="nav-panel">
+          <div class="wrap nav-panel-inner">
+            <a class="btn ghost" href="index.html">All Tools</a>
+            <a class="btn" href="contact.html">Contact</a>
+            <label class="switch" aria-label="Toggle theme (mobile)">
+              <input type="checkbox" id="theme-toggle-mobile" />
+              <span class="track">
+                <span class="icon sun">☀️</span>
+                <span class="icon moon">🌙</span>
+                <span class="thumb"></span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="hero-band">
+        <div class="wrap hero">
+          <h1>Get EXIF, GPS, and More from Your Images</h1>
+          <p>Online & free — no registration, no uploads, no install.</p>
+        </div>
+      </div>
+      <div class="wrap ad-row">
+        <div class="ad-slot" aria-label="Ad placeholder">
+          <!-- AdSense leaderboard placeholder. Replace with your ad code later. -->
+          Your ad can go here (970x90 / responsive)
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="wrap grid">
+        <section class="card drop" aria-label="Upload and analyze">
+          <div class="dropzone" id="dropzone" aria-live="polite" tabindex="0" role="button">
+            <input id="file-input" type="file" accept="image/*,.heic,.heif,.tif,.tiff,.webp,.png,.jpg,.jpeg" />
+            <div class="drop-inner">
+              <div class="drop-title">Drag & drop an image here</div>
+              <div class="drop-hint">or</div>
+              <div class="buttons">
+                <button class="btn" id="browse-btn" type="button">Choose a file</button>
+                <button class="btn primary" id="analyze-btn" type="button" disabled>
+                  <span id="analyze-label">Analyze</span>
+                  <span id="analyze-spin" class="spinner" style="display:none"></span>
+                </button>
+              </div>
+              <div class="note">Supported formats: JPEG, PNG, HEIC/HEIF, WebP, TIFF (and more). Some images may have limited or no embedded metadata.</div>
+            </div>
+          </div>
+
+          <div class="preview" id="preview">
+            <div class="preview-inner">
+              <img id="preview-img" alt="" role="presentation" aria-hidden="true" />
+              <div class="file-chip"><span class="badge">FILE</span> <strong id="file-name">—</strong> <span id="file-size"></span> <span id="file-type"></span></div>
+            </div>
+          </div>
+
+          <div class="results" id="results">
+            <h2>Results</h2>
+            <div class="stats">
+              <div class="stat"><label>Date Taken</label><div class="value" id="date-taken">—</div></div>
+              <div class="stat"><label>Camera</label><div class="value" id="camera">—</div></div>
+              <div class="stat"><label>Resolution</label><div class="value" id="resolution">—</div></div>
+              <div class="stat"><label>Location</label><div class="value" id="location">—</div></div>
+            </div>
+
+            <div class="meta-table" id="meta-table"></div>
+
+            <details class="advanced">
+              <summary>Advanced: view raw metadata JSON</summary>
+              <div class="buttons" style="justify-content: flex-start; margin: 10px 0 0">
+                <button class="btn" id="copy-json" type="button">Copy JSON</button>
+              </div>
+              <pre class="json" id="raw-json" tabindex="0"></pre>
+            </details>
+          </div>
+        </section>
+
+        <aside class="side">
+          <div class="card sticky">
+            <h3>How it works</h3>
+            <ul class="list">
+              <li>Runs entirely in your browser.</li>
+              <li>No images are uploaded to a server.</li>
+              <li>Uses open‑source <a class="link" href="https://github.com/MikeKovarik/exifr" target="_blank" rel="noopener">exifr</a> to read metadata.</li>
+            </ul>
+            <div class="ad-slot ad-rect" aria-label="Ad placeholder">
+              <!-- AdSense rectangle placeholder. -->
+              Your ad can go here (300x250 / 300x280)
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <footer>
+      <div class="wrap footer-top">
+        <div class="footer-grid">
+          <div class="footer-col">
+            <h4>Metadata</h4>
+            <a href="#">View Metadata</a>
+            <a href="#">Metadata Remover</a>
+            <a href="#">Edit Metadata</a>
+          </div>
+          <div class="footer-col">
+            <h4>Extraction</h4>
+            <a href="#">EXIF Parser</a>
+            <a href="#">IPTC/XMP Tools</a>
+            <a href="#">Batch Tools</a>
+          </div>
+          <div class="footer-col">
+            <h4>Comparison</h4>
+            <a href="#">Compare Images</a>
+            <a href="#">Diff Metadata</a>
+          </div>
+          <div class="footer-col">
+            <h4>Company</h4>
+            <a href="#">About</a>
+            <a href="#">Privacy</a>
+            <a href="contact.html">Contact</a>
+          </div>
+        </div>
+      </div>
+      <div class="wrap footer-bottom">
+        <div class="copyright">DistroDoctor™</div>
+        <div>Made with <span aria-label="love">♥</span> and JavaScript</div>
+      </div>
+    </footer>
+
+    <!-- EXIFR (client-side EXIF/IPTC/XMP parser) and app -->
+    <script src="https://unpkg.com/exifr/dist/full.umd.js" defer></script>
+    <script src="app.js" defer></script>
+  </body>
+  </html>

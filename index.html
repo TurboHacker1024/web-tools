@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Distro Doctor™ | Home</title>
+    <meta name="description" content="Browse free, privacy-friendly tools that run in your browser. Read image metadata (EXIF/IPTC/XMP) from JPEG, PNG, HEIC/HEIF, WebP, and TIFF." />
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <script src="theme-init.js"></script>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <header>
+      <div class="topbar">
+        <div class="wrap topbar-inner">
+          <a class="brand" href="index.html">
+            <div class="logo" aria-hidden="true">DD</div>
+            <div class="brand-name">Distro Doctor™</div>
+          </a>
+          <button class="menu-btn" id="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="nav-panel">Menu</button>
+          <div class="nav">
+            <a class="btn ghost" href="index.html">All Tools</a>
+            <a class="btn" href="contact.html">Contact</a>
+            <label class="switch" aria-label="Toggle theme">
+              <input type="checkbox" id="theme-toggle" />
+              <span class="track">
+                <span class="icon sun">☀️</span>
+                <span class="icon moon">🌙</span>
+                <span class="thumb"></span>
+              </span>
+            </label>
+          </div>
+        </div>
+        <div id="nav-panel" class="nav-panel">
+          <div class="wrap nav-panel-inner">
+            <a class="btn ghost" href="index.html">All Tools</a>
+            <a class="btn" href="contact.html">Contact</a>
+            <label class="switch" aria-label="Toggle theme (mobile)">
+              <input type="checkbox" id="theme-toggle-mobile" />
+              <span class="track">
+                <span class="icon sun">☀️</span>
+                <span class="icon moon">🌙</span>
+                <span class="thumb"></span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="hero-band">
+        <div class="wrap hero">
+          <h1>Free, Private, In‑Browser Tools</h1>
+          <p>No uploads. No accounts. Everything runs locally in your browser.</p>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="wrap">
+        <section aria-label="Available tools">
+          <div class="tools-grid">
+            <article class="card tool-card">
+              <h3>Image Metadata Reader</h3>
+              <div class="tool-meta">Client‑side • EXIF • GPS • IPTC/XMP</div>
+              <p>Inspect camera details, capture time, GPS coordinates, and more — for JPEG, PNG, HEIC/HEIF, WebP, and TIFF — without uploading your image.</p>
+              <div class="tool-actions">
+                <a class="btn primary" href="metadata-reader.html">Open Tool</a>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="card" id="contact" style="margin-top: 16px; padding: 16px;">
+          <h3 style="margin: 0 0 8px;">Contact</h3>
+          <p class="note">Questions or ideas for new tools? <a class="link" href="contact.html">Get in touch</a>.</p>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <div class="wrap footer-top">
+        <div class="footer-grid">
+          <div class="footer-col">
+            <h4>Metadata</h4>
+            <a href="metadata-reader.html">View Metadata</a>
+          </div>
+          <div class="footer-col">
+            <h4>Company</h4>
+            <a href="contact.html">Contact</a>
+          </div>
+          <div class="footer-col">
+            <h4>Theme</h4>
+            <a href="#" id="theme-link" onclick="document.getElementById('theme-toggle').click(); return false;">Toggle</a>
+          </div>
+          <div class="footer-col">
+            <h4>More</h4>
+            <a href="index.html">All Tools</a>
+          </div>
+        </div>
+      </div>
+      <div class="wrap footer-bottom">
+        <div class="copyright">DistroDoctor™</div>
+        <div>Made with <span aria-label="love">♥</span> and JavaScript</div>
+      </div>
+    </footer>
+
+    <script src="site.js" defer></script>
+  </body>
+</html>

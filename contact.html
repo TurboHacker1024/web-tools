@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Distro Doctor™ | Contact</title>
+    <meta name="description" content="Contact Distro Doctor™. Email and Matrix details for support and feedback." />
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <script src="theme-init.js"></script>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <header>
+      <div class="topbar">
+        <div class="wrap topbar-inner">
+          <a class="brand" href="index.html">
+            <div class="logo" aria-hidden="true">DD</div>
+            <div class="brand-name">Distro Doctor™</div>
+          </a>
+          <button class="menu-btn" id="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="nav-panel">Menu</button>
+          <div class="nav">
+            <a class="btn ghost" href="index.html">All Tools</a>
+            <a class="btn" href="contact.html" aria-current="page">Contact</a>
+            <label class="switch" aria-label="Toggle theme">
+              <input type="checkbox" id="theme-toggle" />
+              <span class="track">
+                <span class="icon sun">☀️</span>
+                <span class="icon moon">🌙</span>
+                <span class="thumb"></span>
+              </span>
+            </label>
+          </div>
+        </div>
+        <div id="nav-panel" class="nav-panel">
+          <div class="wrap nav-panel-inner">
+            <a class="btn ghost" href="index.html">All Tools</a>
+            <a class="btn" href="contact.html" aria-current="page">Contact</a>
+            <label class="switch" aria-label="Toggle theme (mobile)">
+              <input type="checkbox" id="theme-toggle-mobile" />
+              <span class="track">
+                <span class="icon sun">☀️</span>
+                <span class="icon moon">🌙</span>
+                <span class="thumb"></span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="hero-band">
+        <div class="wrap hero">
+          <h1>Contact Distro Doctor™</h1>
+          <p>We’d love to hear your feedback, requests, and bug reports.</p>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="wrap">
+        <div class="banner warn" id="contact-banner" role="status" aria-live="polite">
+          <button class="close" id="dismiss-banner" aria-label="Dismiss notice" title="Dismiss">×</button>
+          ⚠️ Contact addresses are placeholders and currently inactive.
+          <span class="small">We can’t receive or reply to messages at these addresses yet.</span>
+        </div>
+        <section class="card" style="padding: 16px;">
+          <h3 style="margin: 0 0 12px;">Support Channels</h3>
+          <ul class="list" style="margin: 0;">
+            <li><strong>Email:</strong> <a class="link" href="mailto:support@distrodoctor.com">support@distrodoctor.com</a></li>
+            <li><strong>Matrix/Element:</strong> <a class="link" href="https://matrix.to/#/@support:distrodoctor.com" target="_blank" rel="noopener">@support:distrodoctor.com</a></li>
+          </ul>
+          <p class="note" style="margin-top: 12px;">We typically respond within 1–2 business days.</p>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <div class="wrap footer-top">
+        <div class="footer-grid">
+          <div class="footer-col">
+            <h4>Tools</h4>
+            <a href="metadata-reader.html">Image Metadata Reader</a>
+          </div>
+          <div class="footer-col">
+            <h4>Company</h4>
+            <a href="contact.html" aria-current="page">Contact</a>
+          </div>
+          <div class="footer-col">
+            <h4>Theme</h4>
+            <a href="#" id="theme-link" onclick="document.getElementById('theme-toggle').click(); return false;">Toggle</a>
+          </div>
+          <div class="footer-col">
+            <h4>More</h4>
+            <a href="index.html">All Tools</a>
+          </div>
+        </div>
+      </div>
+      <div class="wrap footer-bottom">
+        <div class="copyright">DistroDoctor™</div>
+        <div>Made with <span aria-label="love">♥</span> and JavaScript</div>
+      </div>
+    </footer>
+
+    <script src="site.js" defer></script>
+  </body>
+  </html>
