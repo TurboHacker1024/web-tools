@@ -98,6 +98,14 @@ function setFile(file) {
   resultsBox.style.display = 'none';
 }
 
+// Env detection for mobile/Android to decide which picker to use
+const isMobile = () => {
+  const ua = (navigator.userAgent || '').toLowerCase();
+  const uaDataMobile = navigator.userAgentData && navigator.userAgentData.mobile;
+  return !!(uaDataMobile || /android|iphone|ipad|ipod|iemobile|mobile|blackberry|bb10|opera mini/.test(ua));
+};
+const preferAltPicker = isMobile();
+
 // Dropzone events
 dz.addEventListener('dragenter', (e) => { e.preventDefault(); dz.classList.add('dragover'); });
 dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('dragover'); });
@@ -107,16 +115,16 @@ dz.addEventListener('drop', (e) => {
   const file = e.dataTransfer?.files?.[0];
   if (file) handleIncomingFile(file);
 });
-// Click and keyboard activation for better mobile/Firefox UX
+// Click and keyboard activation; choose preferred picker based on platform
 dz.addEventListener('click', (e) => {
   // Only trigger picker when clicking non-interactive area of dropzone
   const interactive = e.target.closest('button, a, input, label, summary, details');
-  if (!interactive) fileInput.click();
+  if (!interactive) (preferAltPicker && altFileInput ? altFileInput : fileInput).click();
 });
 dz.addEventListener('keydown', (e) => {
   // Only when the dropzone itself is focused
   if (e.target !== dz) return;
-  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); (preferAltPicker && altFileInput ? altFileInput : fileInput).click(); }
 });
 // Prevent opening file when dropped outside the zone
 window.addEventListener('dragover', (e) => {
@@ -342,7 +350,7 @@ async function analyze(file) {
   );
   const coordsMissing = !(isFiniteNumber(lat) && isFiniteNumber(lng));
   if (gpsNoteEl) {
-    if (hasGpsBlock && coordsMissing) {
+    if (preferAltPicker && hasGpsBlock && coordsMissing) {
       gpsNoteEl.style.display = 'block';
       gpsNoteEl.textContent = 'No GPS coordinates found in this copy. On Android Chrome/Brave, the photo picker often removes location metadata. Try the Alternate picker above or pick from the Files app/Downloads rather than Photos.';
     } else {
@@ -379,34 +387,7 @@ async function analyze(file) {
   }
   const gpsAlt = isFiniteNumber(gpsAltVal) ? `${gpsAltVal} m` : undefined;
   
-  // Attach debug info for troubleshooting (visible in Advanced JSON)
-  try {
-    const dbgCandidates = { latCandidates, lngCandidates };
-    const dbgConverted = {
-      latParsed: lat,
-      lngParsed: lng,
-      latRef,
-      lngRef,
-      gpsOnly
-    };
-    meta._debug = Object.assign({}, meta._debug || {}, { gps: { candidates: dbgCandidates, parsed: dbgConverted, raw: {
-      latitude: meta?.latitude,
-      longitude: meta?.longitude,
-      GPSLatitude: meta?.GPSLatitude,
-      GPSLongitude: meta?.GPSLongitude,
-      Latitude: meta?.Latitude,
-      Longitude: meta?.Longitude,
-      GPSLatitudeRef: meta?.GPSLatitudeRef,
-      GPSLongitudeRef: meta?.GPSLongitudeRef,
-      GPSAltitude: meta?.GPSAltitude,
-      GPSAltitudeRef: meta?.GPSAltitudeRef,
-      altitude: meta?.altitude
-    } } });
-    // Also log to console to aid remote debugging
-    if (typeof console !== 'undefined' && console.debug) {
-      console.debug('[DD metadata-reader] GPS debug', meta._debug.gps);
-    }
-  } catch {}
+  // (Debug code removed in production)
 
   const iptcTitle = pickFirst(meta?.ObjectName, meta?.Title, meta?.DocumentTitle);
   const iptcDesc = pickFirst(meta?.Caption, meta?.CaptionAbstract, meta?.Description);
@@ -467,6 +448,19 @@ copyJsonBtn.addEventListener('click', async () => {
 
 // Initialize
 resetUI();
+// Show only the appropriate picker button for the platform
+(function(){
+  if (!browseBtn || !altBrowseBtn) return;
+  if (preferAltPicker) {
+    // Mobile: show only Alternate picker
+    browseBtn.style.display = 'none';
+    altBrowseBtn.style.display = '';
+  } else {
+    // Desktop: show only standard image picker
+    altBrowseBtn.style.display = 'none';
+    browseBtn.style.display = '';
+  }
+})();
 // Footer year
 (function(){ const y = document.getElementById('year'); if (y) y.textContent = new Date().getFullYear(); })();
 // Mobile menu toggle
