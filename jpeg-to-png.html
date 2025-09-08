@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Distro Doctor™ Image Metadata Reader | Free Tool</title>
-    <meta name="description" content="Read EXIF, IPTC, and XMP metadata (including GPS) from images like JPEG, PNG, HEIC/HEIF, WebP, and TIFF — all in your browser." />
+    <title>JPEG → PNG Converter | Distro Doctor™</title>
+    <meta name="description" content="Convert a JPEG image to PNG entirely in your browser. Private, fast, and free — no uploads, no accounts." />
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <script src="theme-init.js"></script>
     <link rel="stylesheet" href="style.css">
@@ -48,37 +48,36 @@
       </div>
       <div class="hero-band">
         <div class="wrap hero">
-          <h1>Get EXIF, GPS, and More from Your Images</h1>
-          <p>Online & free — no registration, no uploads, no install.</p>
+          <h1>JPEG → PNG Converter</h1>
+          <p>Private and fast — runs fully in your browser.</p>
         </div>
       </div>
+    </header>
       <div class="wrap ad-row">
         <div class="ad-slot" aria-label="Ad placeholder">
           <!-- AdSense leaderboard placeholder. Replace with your ad code later. -->
           Your ad can go here (970x90 / responsive)
         </div>
       </div>
-    </header>
 
     <main>
       <div class="wrap grid">
-        <section class="card drop" aria-label="Upload and analyze">
+        <section class="card drop" aria-label="Upload and convert">
           <div class="dropzone" id="dropzone" aria-live="polite" tabindex="0" role="button">
-            <input id="file-input" type="file" accept="image/*,.heic,.heif,.tif,.tiff,.webp,.png,.jpg,.jpeg" />
-            <!-- Alternate picker for Android Chrome/Brave which may redact GPS when using image/* -->
+            <input id="file-input" type="file" accept="image/jpeg,.jpg,.jpeg" />
             <input id="file-input-any" type="file" accept="*/*" style="display:none" />
             <div class="drop-inner">
-              <div class="drop-title">Drag & drop an image here</div>
+              <div class="drop-title">Drag & drop a JPEG here</div>
               <div class="drop-hint">or</div>
               <div class="buttons">
-                <button class="btn" id="browse-btn" type="button">Choose a file</button>
-                <button class="btn" id="browse-alt-btn" type="button" title="Choose a file">Choose a file</button>
-                <button class="btn primary" id="analyze-btn" type="button" disabled>
-                  <span id="analyze-label">Analyze</span>
-                  <span id="analyze-spin" class="spinner" style="display:none"></span>
+                <button class="btn" id="browse-btn" type="button">Choose a JPEG</button>
+                <button class="btn" id="browse-alt-btn" type="button" title="Choose a JPEG">Choose a JPEG</button>
+                <button class="btn primary" id="convert-btn" type="button" disabled>
+                  <span id="convert-label">Convert to PNG</span>
+                  <span id="convert-spin" class="spinner" style="display:none"></span>
                 </button>
               </div>
-              <div class="note">Supported formats: JPEG, PNG, HEIC/HEIF, WebP, TIFF (and more). Some images may have limited or no embedded metadata.</div>
+              <div class="note">No uploads. Works offline after load. Large images may take a moment to convert.</div>
             </div>
           </div>
 
@@ -89,38 +88,30 @@
             </div>
           </div>
 
-          <div class="results" id="results">
-            <h2>Results</h2>
-            <div class="stats">
-              <div class="stat"><label>Date Taken</label><div class="value" id="date-taken">—</div></div>
-              <div class="stat"><label>Camera</label><div class="value" id="camera">—</div></div>
-              <div class="stat"><label>Resolution</label><div class="value" id="resolution">—</div></div>
-              <div class="stat"><label>Location</label><div class="value" id="location">—</div></div>
-              <div class="note" id="gps-note" style="display:none"></div>
-            </div>
-
-            <div class="meta-table" id="meta-table"></div>
-
-            <details class="advanced">
-              <summary>Advanced: view raw metadata JSON</summary>
-              <div class="buttons" style="justify-content: flex-start; margin: 10px 0 0">
-                <button class="btn" id="copy-json" type="button">Copy JSON</button>
+          <div class="convert-panel" id="convert-panel" style="display:none">
+            <div class="progress-wrap">
+              <div class="progress" aria-label="Conversion progress" aria-live="polite" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress">
+                <div class="bar" id="progress-bar"></div>
               </div>
-              <pre class="json" id="raw-json" tabindex="0"></pre>
-            </details>
+              <div class="progress-text" id="progress-text">Waiting to convert…</div>
+            </div>
+            <div class="buttons" style="margin-top: 10px; justify-content: flex-start;">
+              <a class="btn" id="download-btn" download style="display:none">Download PNG</a>
+              <button class="btn ghost" id="reset-btn" type="button">Reset</button>
+            </div>
+            <div class="note" id="result-note" style="margin-top: 8px; display:none"></div>
           </div>
         </section>
 
         <aside class="side">
-          <div class="card sticky">
-            <h3>How it works</h3>
+          <div class="card sticky" style="padding: 16px;">
+            <h3>About this tool</h3>
             <ul class="list">
               <li>Runs entirely in your browser.</li>
-              <li>No images are uploaded to a server.</li>
-              <li>Uses open‑source <a class="link" href="https://github.com/MikeKovarik/exifr" target="_blank" rel="noopener">exifr</a> to read metadata.</li>
+              <li>No uploads or accounts required.</li>
+              <li>Auto‑rotates output using EXIF orientation.</li>
             </ul>
             <div class="ad-slot ad-rect" aria-label="Ad placeholder">
-              <!-- AdSense rectangle placeholder. -->
               Your ad can go here (300x250 / 300x280)
             </div>
           </div>
@@ -156,8 +147,8 @@
       </div>
     </footer>
 
-    <!-- EXIFR (client-side EXIF/IPTC/XMP parser) and app -->
-    <script src="https://unpkg.com/exifr/dist/full.umd.js" defer></script>
-    <script src="app.js" defer></script>
+    <!-- EXIFR just for orientation handling -->
+    <script src="https://unpkg.com/exifr/dist/mini.umd.js" defer></script>
+    <script src="jpeg-to-png.js" defer></script>
   </body>
   </html>

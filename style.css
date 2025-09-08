@@ -117,13 +117,11 @@ main { padding: 24px 0 140px; flex: 1 0 auto; }
 /* Avoid cards creating horizontal scroll on mobile when inner content is wide */
 .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: none; background-clip: padding-box; isolation: isolate; overflow: hidden; }
 
-.drop {
-  padding: 18px; display: grid; gap: 16px;
-}
-.dropzone { position: relative; border: 2px dashed var(--border); border-radius: 12px; padding: 26px; text-align: center; transition: 0.15s border-color, 0.15s background; background: var(--surface); }
+.drop { padding: 18px; display: grid; gap: 16px; width: 100%; max-width: 100%; }
+.dropzone { position: relative; border: 2px dashed var(--border); border-radius: 12px; padding: 26px; text-align: center; transition: 0.15s border-color, 0.15s background; background: var(--surface); max-width: 100%; overflow: hidden; }
 .dropzone.dragover { border-color: var(--accent-2); background: #e6fbfb; }
 .dropzone input[type=file] { display: none; }
-.drop-inner { display: grid; gap: 8px; place-items: center; }
+.drop-inner { display: grid; gap: 8px; place-items: center; max-width: 100%; overflow-x: hidden; }
 .drop-title { font-size: 18px; font-weight: 650; }
 .drop-hint { color: var(--muted); font-size: 14px; }
 .buttons { display: flex; gap: 10px; justify-content: center; margin-top: 8px; flex-wrap: wrap; }
@@ -151,10 +149,11 @@ a.btn:link, a.btn:visited, a.btn:hover, a.btn:active { text-decoration: none; }
 .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .file-chip { display: inline-flex; align-items: center; gap: 8px; background: var(--chip); border: 1px solid var(--border); padding: 6px 10px; border-radius: 999px; font-size: 13px; color: var(--muted); max-width: 100%; min-width: 0; flex: 1 1 auto; overflow: hidden; }
-.file-chip strong { color: var(--text); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file-chip strong { color: var(--text); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1 1 auto; }
+.file-chip .badge, .file-chip span { white-space: nowrap; flex: 0 0 auto; }
 
-.preview { display: none; padding: 0 6px; margin-top: 8px; max-width: 100%; }
-.preview-inner { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.preview { display: none; padding: 0 6px; margin-top: 8px; max-width: 100%; overflow-x: hidden; }
+.preview-inner { display: flex; align-items: center; gap: 12px; min-width: 0; max-width: 100%; }
 .preview img { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border); }
 img, svg, video, canvas { max-width: 100%; height: auto; }
 
@@ -196,6 +195,12 @@ pre.json {
   word-wrap: normal;
   white-space: pre; /* do not wrap JSON, keep in scroller */
 }
+
+/* Progress bar (used by converters) */
+.progress-wrap { display: grid; gap: 8px; }
+.progress { position: relative; height: 10px; background: var(--border-soft); border: 1px solid var(--border); border-radius: 999px; overflow: hidden; }
+.progress .bar { position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: linear-gradient(180deg, var(--accent-2), var(--accent)); transition: width 0.25s ease; }
+.progress-text { color: var(--muted); font-size: 13px; }
 
 /* Tighter safeguards for very small screens */
 @media (max-width: 560px) {
