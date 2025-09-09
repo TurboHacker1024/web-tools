@@ -6,8 +6,8 @@
     <title>Distro Doctor™ | Home</title>
     <meta name="description" content="Browse free, privacy-friendly tools that run in your browser. Read image metadata (EXIF/IPTC/XMP) from JPEG, PNG, HEIC/HEIF, WebP, and TIFF." />
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
-    <script src="theme-init.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <script src="assets/js/core/theme-init.js"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
   </head>
   <body>
     <header>
@@ -67,11 +67,27 @@
               </div>
             </article>
             <article class="card tool-card">
+              <h3>Remove Image Metadata</h3>
+              <div class="tool-meta">Private • EXIF/IPTC/XMP • Local</div>
+              <p>Strip camera and location data from images. Keeps format when possible; otherwise converts to PNG.</p>
+              <div class="tool-actions">
+                <a class="btn primary" href="strip-metadata.html">Open Tool</a>
+              </div>
+            </article>
+            <article class="card tool-card">
               <h3>Image Metadata Reader</h3>
               <div class="tool-meta">Client‑side • EXIF • GPS • IPTC/XMP</div>
               <p>Inspect camera details, capture time, GPS coordinates, and more — for JPEG, PNG, HEIC/HEIF, WebP, and TIFF — without uploading your image.</p>
               <div class="tool-actions">
                 <a class="btn primary" href="metadata-reader.html">Open Tool</a>
+              </div>
+            </article>
+            <article class="card tool-card">
+              <h3>What’s My IP?</h3>
+              <div class="tool-meta">Network • Quick • Private</div>
+              <p>Show your current public IP address. Simple, fast, and privacy‑friendly.</p>
+              <div class="tool-actions">
+                <a class="btn primary" href="whats-my-ip.html">Open Tool</a>
               </div>
             </article>
           </div>
@@ -84,33 +100,9 @@
       </div>
     </main>
 
-    <footer>
-      <div class="wrap footer-top">
-        <div class="footer-grid">
-          <div class="footer-col">
-            <h4>Metadata</h4>
-            <a href="metadata-reader.html">View Metadata</a>
-          </div>
-          <div class="footer-col">
-            <h4>Company</h4>
-            <a href="contact.html">Contact</a>
-          </div>
-          <div class="footer-col">
-            <h4>Theme</h4>
-            <a href="#" id="theme-link" onclick="document.getElementById('theme-toggle').click(); return false;">Toggle</a>
-          </div>
-          <div class="footer-col">
-            <h4>More</h4>
-            <a href="index.html">All Tools</a>
-          </div>
-        </div>
-      </div>
-      <div class="wrap footer-bottom">
-        <div class="copyright">DistroDoctor™</div>
-        <div>Made with <span aria-label="love">♥</span> and JavaScript</div>
-      </div>
-    </footer>
+    <footer id="site-footer"></footer>
 
-    <script src="site.js" defer></script>
+    <script src="assets/js/core/site.js" defer></script>
+    <script src="assets/js/core/footer.js" defer></script>
   </body>
 </html>

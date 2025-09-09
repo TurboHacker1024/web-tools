@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>JPEG → PNG Converter | Distro Doctor™</title>
-    <meta name="description" content="Convert a JPEG image to PNG entirely in your browser. Private, fast, and free — no uploads, no accounts." />
+    <title>Remove Image Metadata (EXIF/IPTC/XMP) | Distro Doctor™</title>
+    <meta name="description" content="Strip metadata from images in your browser. Private and fast — no uploads required." />
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <script src="assets/js/core/theme-init.js"></script>
     <link rel="stylesheet" href="assets/css/style.css">
@@ -48,36 +48,35 @@
       </div>
       <div class="hero-band">
         <div class="wrap hero">
-          <h1>JPEG → PNG Converter</h1>
-          <p>Private and fast — runs fully in your browser.</p>
+          <h1>Remove Image Metadata</h1>
+          <p>Clean EXIF/IPTC/XMP data locally in your browser.</p>
         </div>
       </div>
-    </header>
       <div class="wrap ad-row">
         <div class="ad-slot" aria-label="Ad placeholder">
-          <!-- AdSense leaderboard placeholder. Replace with your ad code later. -->
           Your ad can go here (970x90 / responsive)
         </div>
       </div>
+    </header>
 
     <main>
       <div class="wrap grid">
-        <section class="card drop" aria-label="Upload and convert">
+        <section class="card drop" aria-label="Upload and clean">
           <div class="dropzone" id="dropzone" aria-live="polite" tabindex="0" role="button">
-            <input id="file-input" type="file" accept="image/jpeg,.jpg,.jpeg" />
+            <input id="file-input" type="file" accept="image/*,.heic,.heif,.tif,.tiff,.webp,.png,.jpg,.jpeg" />
             <input id="file-input-any" type="file" accept="*/*" style="display:none" />
             <div class="drop-inner">
-              <div class="drop-title">Drag & drop a JPEG here</div>
+              <div class="drop-title">Drag & drop an image here</div>
               <div class="drop-hint">or</div>
               <div class="buttons">
-                <button class="btn" id="browse-btn" type="button">Choose a JPEG</button>
-                <button class="btn" id="browse-alt-btn" type="button" title="Choose a JPEG">Choose a JPEG</button>
-                <button class="btn primary" id="convert-btn" type="button" disabled>
-                  <span id="convert-label">Convert to PNG</span>
-                  <span id="convert-spin" class="spinner" style="display:none"></span>
+                <button class="btn" id="browse-btn" type="button">Choose a file</button>
+                <button class="btn" id="browse-alt-btn" type="button" title="Choose a file">Choose a file</button>
+                <button class="btn primary" id="clean-btn" type="button" disabled>
+                  <span id="clean-label">Remove Metadata</span>
+                  <span id="clean-spin" class="spinner" style="display:none"></span>
                 </button>
               </div>
-              <div class="note">No uploads. Works offline after load. Large images may take a moment to convert.</div>
+              <div class="note">No uploads. Works offline after load. Formats must be supported by your browser. Orientation is preserved.</div>
             </div>
           </div>
 
@@ -90,13 +89,13 @@
 
           <div class="convert-panel" id="convert-panel" style="display:none">
             <div class="progress-wrap">
-              <div class="progress" aria-label="Conversion progress" aria-live="polite" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress">
+              <div class="progress" aria-label="Cleaning progress" aria-live="polite" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress">
                 <div class="bar" id="progress-bar"></div>
               </div>
-              <div class="progress-text" id="progress-text">Waiting to convert…</div>
+              <div class="progress-text" id="progress-text">Waiting…</div>
             </div>
             <div class="buttons" style="margin-top: 10px; justify-content: flex-start;">
-              <a class="btn" id="download-btn" download style="display:none">Download PNG</a>
+              <a class="btn" id="download-btn" download style="display:none">Download Clean Image</a>
               <button class="btn ghost" id="reset-btn" type="button">Reset</button>
             </div>
             <div class="note" id="result-note" style="margin-top: 8px; display:none"></div>
@@ -105,11 +104,11 @@
 
         <aside class="side">
           <div class="card sticky" style="padding: 16px;">
-            <h3>About this tool</h3>
+            <h3>How it works</h3>
             <ul class="list">
-              <li>Runs entirely in your browser.</li>
-              <li>No uploads or accounts required.</li>
-              <li>Auto‑rotates output using EXIF orientation.</li>
+              <li>Re‑encodes the image using Canvas, removing metadata.</li>
+              <li>Tries to keep original format; falls back to PNG if unsupported.</li>
+              <li>Runs entirely in your browser — no uploads.</li>
             </ul>
             <div class="ad-slot ad-rect" aria-label="Ad placeholder">
               Your ad can go here (300x250 / 300x280)
@@ -121,9 +120,10 @@
 
     <footer id="site-footer"></footer>
 
-    <!-- EXIFR just for orientation handling -->
     <script src="https://unpkg.com/exifr/dist/mini.umd.js" defer></script>
-    <script src="assets/js/tools/jpeg-to-png.js" defer></script>
+    <script src="assets/js/core/site.js" defer></script>
+    <script src="assets/js/tools/strip-metadata.js" defer></script>
     <script src="assets/js/core/footer.js" defer></script>
   </body>
   </html>
+
