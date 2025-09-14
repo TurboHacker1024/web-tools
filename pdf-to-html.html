@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PDF → HTML (Static Page) | Distro Doctor™</title>
+    <meta name="description" content="Convert a PDF to a standalone HTML file in your browser. Preserves layout by rendering each page as an image. Private, fast, and free — no uploads." />
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <script src="assets/js/core/theme-init.js"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- pdf.js (via CDN). Used only at runtime in-browser; no uploads occur. -->
+    <script src="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+    <script>
+      // Configure pdf.js worker
+      if (window['pdfjsLib']) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+      }
+    </script>
+  </head>
+  <body>
+    <header>
+      <div class="topbar">
+        <div class="wrap topbar-inner">
+          <a class="brand" href="index.html">
+            <div class="logo" aria-hidden="true">DD</div>
+            <div class="brand-name">Distro Doctor™</div>
+          </a>
+          <button class="menu-btn" id="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="nav-panel">Menu</button>
+          <div class="nav">
+            <a class="btn ghost" href="index.html">All Tools</a>
+            <a class="btn" href="contact.html">Contact</a>
+            <label class="switch" aria-label="Toggle theme">
+              <input type="checkbox" id="theme-toggle" />
+              <span class="track">
+                <span class="icon sun">☀️</span>
+                <span class="icon moon">🌙</span>
+                <span class="thumb"></span>
+              </span>
+            </label>
+          </div>
+        </div>
+        <div id="nav-panel" class="nav-panel">
+          <div class="wrap nav-panel-inner">
+            <a class="btn ghost" href="index.html">All Tools</a>
+            <a class="btn" href="contact.html">Contact</a>
+            <label class="switch" aria-label="Toggle theme (mobile)">
+              <input type="checkbox" id="theme-toggle-mobile" />
+              <span class="track">
+                <span class="icon sun">☀️</span>
+                <span class="icon moon">🌙</span>
+                <span class="thumb"></span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="hero-band">
+        <div class="wrap hero">
+          <h1>PDF → HTML (Static Page)</h1>
+          <p>Private and fast — runs fully in your browser.</p>
+        </div>
+      </div>
+    </header>
+      <div class="wrap ad-row">
+        <div class="ad-slot" aria-label="Ad placeholder">
+          <!-- AdSense leaderboard placeholder. Replace with your ad code later. -->
+          Your ad can go here (970x90 / responsive)
+        </div>
+      </div>
+
+    <main>
+      <div class="wrap grid">
+        <section class="card drop" aria-label="Upload and convert">
+          <div class="dropzone" id="dropzone" aria-live="polite" tabindex="0" role="button">
+            <input id="file-input" type="file" accept="application/pdf,.pdf" />
+            <input id="file-input-any" type="file" accept="*/*" style="display:none" />
+            <div class="drop-inner">
+              <div class="drop-title">Drag & drop a PDF here</div>
+              <div class="drop-hint">or</div>
+              <div class="buttons">
+                <button class="btn" id="browse-btn" type="button">Choose a PDF</button>
+                <button class="btn" id="browse-alt-btn" type="button" title="Choose a PDF">Choose a PDF</button>
+                <button class="btn primary" id="convert-btn" type="button" disabled>
+                  <span id="convert-label">Convert to HTML</span>
+                  <span id="convert-spin" class="spinner" style="display:none"></span>
+                </button>
+              </div>
+              <div class="note">No uploads. Works offline after load. Large PDFs may take time and memory to convert.</div>
+            </div>
+          </div>
+
+          <div class="preview" id="preview">
+            <div class="preview-inner">
+              <canvas id="preview-canvas" aria-hidden="true"></canvas>
+              <div class="file-chip"><span class="badge">FILE</span> <strong id="file-name">—</strong> <span id="file-size"></span> <span id="file-type"></span></div>
+            </div>
+          </div>
+
+          <div class="convert-panel" id="convert-panel" style="display:none">
+            <div class="progress-wrap">
+              <div class="progress" aria-label="Conversion progress" aria-live="polite" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress">
+                <div class="bar" id="progress-bar"></div>
+              </div>
+              <div class="progress-text" id="progress-text">Waiting to convert…</div>
+            </div>
+
+            <details class="settings" style="margin-top: 10px;">
+              <summary>Advanced options</summary>
+              <div class="settings-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
+                <label>Image format
+                  <select id="format">
+                    <option value="jpeg">JPEG (smaller)</option>
+                    <option value="png">PNG (larger)</option>
+                  </select>
+                </label>
+                <label>Quality (JPEG)
+                  <input id="quality" type="range" min="0.5" max="0.95" step="0.05" value="0.9" />
+                </label>
+                <label>Scale
+                  <select id="scale">
+                    <option value="1.25">1.25× (balanced)</option>
+                    <option value="1.5">1.5× (sharper)</option>
+                    <option value="2">2× (high quality)</option>
+                    <option value="1">1× (smaller)</option>
+                  </select>
+                </label>
+                <label>Max pages (0 = all)
+                  <input id="max-pages" type="number" min="0" step="1" value="0" />
+                </label>
+              </div>
+            </details>
+
+            <div class="buttons" style="margin-top: 10px; justify-content: flex-start;">
+              <a class="btn" id="download-btn" download style="display:none">Download HTML</a>
+              <button class="btn ghost" id="reset-btn" type="button">Reset</button>
+            </div>
+            <div class="note" id="result-note" style="margin-top: 8px; display:none"></div>
+          </div>
+        </section>
+
+        <aside class="side">
+          <div class="card sticky" style="padding: 16px;">
+            <h3 style="margin:0 0 8px;">About this tool</h3>
+            <p>
+              This converts your PDF into a single, standalone HTML file. Each page is rendered to an image to preserve layout and appearance.
+              The HTML includes simple CSS for nice on‑screen viewing and printing.
+            </p>
+            <ul class="checklist">
+              <li>Private: runs in your browser</li>
+              <li>Self‑contained HTML with embedded images</li>
+              <li>Good visual fidelity to the PDF</li>
+            </ul>
+            <p class="note">Tip: Prefer PNG for diagrams and text, JPEG for photos or smaller file size.</p>
+            <div class="ad-slot ad-rect" aria-label="Ad placeholder">
+              <!-- AdSense rectangle placeholder. Replace with your ad code later. -->
+              Your ad can go here (300x250 / 300x280)
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <footer id="site-footer"></footer>
+
+    <script src="assets/js/tools/pdf-to-html.js" defer></script>
+    <script src="assets/js/core/footer.js" defer></script>
+  </body>
+  </html>
